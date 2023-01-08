@@ -9,26 +9,36 @@
         </style>
     </head>
     <body>
-        <ul></ul>
+        
         <form id="form" action  ="">
             <input id="input" /><button> Send</button>
         </form>
+        <ul id="messages"></ul>
 
-        <script src="/socket.io/socket.io.js"></script>
+        <script src="/socket.io/socket.io.js"></script> <!--นำเข้าไฟล์ socket.io client library-->
         <script>
-            var socket = io(); 
-            
-            var form = document.getElementById("form");
-            var input = document.getElementById("input");
+            var socket = io(); // สร้าง instance ของ socket client
 
-            form.addEventListener('submit',function(e) {
-                e.preventDefault();
-                if (input.value) {
-                    socket.emit('chat message', input.value);
-                    input.value = '';
+            var form = document.getElementById("form"); // หา element ที่มีชื่อว่า form (จาก id)
+            var input = document.getElementById("input"); // หา element ที่มีชื่อว่า input (จาก id)
+            var messages = document.getElementById("messages"); // หา element  ที่มีชื่อว่า messages (จาก id)
+
+            form.addEventListener('submit',function(e) { // ตั้ง event listener สำหรับการ submit ของ form
+                e.preventDefault(); // ป้องกันการ refresh page ที่จะเกิดขึ้นเมื่อ form ถูก submit
+                if (input.value) { // ถ้ามีข้อมูลใน input
+                    socket.emit('chat message', input.value); // ส่ง event 'chat message' ไปยัง server พร้อมกับส่งข้อความจาก input ไปด้วย
+                    input.value = ''; // ล้างข้อมูลใน input
                 }
             } );
 
+            // สร้าง ul สำหรับแสดงข้อความของ chat
+            socket.on('chat message', function(msg) { // ตั้ง event listener สำหรับข้อความที่ส่งมาจาก server
+                
+                var li = document.createElement("li"); // สร้าง element li
+                    li.textContent = msg; // กำหนดข้อความของ li เป็นข้อความที่ได้รับ
+                    messages.appendChild(li); // เพิ่ม li เข้าไปใน ul
+                    
+            } );
         </script>
     </body>
 </html>
